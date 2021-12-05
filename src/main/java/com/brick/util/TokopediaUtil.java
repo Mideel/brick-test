@@ -22,8 +22,8 @@ public class TokopediaUtil {
     private static final String LIST_ID = "lstCL2ProductList";
     private static final String HANDHONE_PAGE = "https://www.tokopedia.com/p/handphone-tablet/handphone";
     private static final String QUERY_PARAM_PAGE = "page";
-    private static final int LIMIT_PRODUCT = 9;
-    private static final int LIMIT_CONTAINER = 3;
+    private static final int LIMIT_PRODUCT = 100;
+    private static final int LIMIT_CONTAINER = Integer.MAX_VALUE;
 
     static final String COOKIES_HEADER = "Set-Cookie";
     private static WebDriver webDriver = null;
