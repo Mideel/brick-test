@@ -83,7 +83,13 @@ public class TokopediaUtil {
 
         IntStream.range(1, 3)
         .forEach(index -> {
-            jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+            try {
+                jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+                Thread.sleep(1000);
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
         });
         
 //        for (int i = 0; i < 3; i++) {
@@ -125,11 +131,13 @@ public class TokopediaUtil {
     private static void setProductAttributes(Product p, WebElement con) {
         WebElement nameElmt = con.findElement(By.cssSelector("span.css-1bjwylw"));
         WebElement priceElmt = con.findElement(By.cssSelector("span.css-o5uqvq"));
-        WebElement imgElmt = con.findElement(By.cssSelector("div.css-t8frx0 img"));
+        WebElement imgElmt = con.findElement(By.cssSelector("img[crossorigin=anonymous]"));
         WebElement sellerElmt = con.findElements(By.cssSelector("span.css-1kr22w3")).get(1);
         String name = nameElmt.getAttribute("innerText");
         String price = priceElmt.getAttribute("innerText");
         String imgLink = imgElmt.getAttribute("src");
+        if(imgLink != null)
+            imgLink = imgLink.replace(";", " ");
         String seller = sellerElmt.getAttribute("innerText");
 
         p.setName(name);
