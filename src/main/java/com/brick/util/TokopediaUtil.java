@@ -5,6 +5,7 @@ import com.brick.exporter.CSVExporter;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -80,9 +81,14 @@ public class TokopediaUtil {
 
         JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
 
-        for (int i = 0; i < 3; i++) {
+        IntStream.range(1, 3)
+        .forEach(index -> {
             jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-        }
+        });
+        
+//        for (int i = 0; i < 3; i++) {
+//            jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+//        }
 
         List<WebElement> containers = webDriver.findElements(By.cssSelector("a[data-testid=lnkProductContainer]"));
         System.out.println("Containers size: " + containers.size());
@@ -96,11 +102,6 @@ public class TokopediaUtil {
             } catch (Exception e) {
                 System.out.println("There's an exceptio when retieving a product");
                 e.printStackTrace();
-                String s = webDriver.getWindowHandle();
-                if(!s.equals(currentHandle)) {
-                    webDriver.close();
-                    webDriver.switchTo().window(currentHandle);
-                }
             }
             totalCon++;
             if(totalCon >= LIMIT_CONTAINER)
@@ -146,6 +147,7 @@ public class TokopediaUtil {
         JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
         String productHRef = getProductHRef(detailHRef);
         System.out.println("Product ref: " + productHRef);
+        try {
         webDriver.switchTo().newWindow(WindowType.TAB);
         webDriver.navigate().to(productHRef);
         WebElement starElmt = null;
@@ -193,6 +195,15 @@ public class TokopediaUtil {
         System.out.println("Stars: " + stars);
         webDriver.close();
         webDriver.switchTo().window(currentHandle);
+        }
+        catch(Exception e) {
+            System.out.println("There's an exception when trying to get the detail");
+            String s = webDriver.getWindowHandle();
+            if(!s.equals(currentHandle)) {
+                webDriver.close();
+                webDriver.switchTo().window(currentHandle);
+            }
+        }
     }
     
     private static String getProductHRef(String detailHRef) throws Exception {
