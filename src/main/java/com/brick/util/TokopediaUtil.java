@@ -21,7 +21,7 @@ public class TokopediaUtil {
 
     private static final String DATA_TESTID = "data-testid";
     private static final String LIST_ID = "lstCL2ProductList";
-    private static final String HANDHONE_PAGE = "https://www.tokopedia.com/p/handphone-tablet/handphone";
+    private static final String HANDPHONE_PAGE = "https://www.tokopedia.com/p/handphone-tablet/handphone";
     private static final String QUERY_PARAM_PAGE = "page";
     private static final int LIMIT_PRODUCT = 100;
     private static final int LIMIT_CONTAINER = Integer.MAX_VALUE;
@@ -56,8 +56,8 @@ public class TokopediaUtil {
             listProduct.addAll(retrieveProductsAtPage(page));
             page++;
         } while (listProduct.size() < LIMIT_PRODUCT);
-        
-        if(listProduct.size() > LIMIT_PRODUCT) {
+
+        if (listProduct.size() > LIMIT_PRODUCT) {
             listProduct.removeIf(p -> listProduct.indexOf(p) >= LIMIT_PRODUCT);
         }
 
@@ -68,7 +68,7 @@ public class TokopediaUtil {
     private static List<Product> retrieveProductsAtPage(int page) throws Exception {
         List<Product> listProduct = new ArrayList<>();
         String currentHandle = webDriver.getWindowHandle();
-        String address = HANDHONE_PAGE + "?" + QUERY_PARAM_PAGE + "=" + page;
+        String address = HANDPHONE_PAGE + "?" + QUERY_PARAM_PAGE + "=" + page;
         System.out.println("============================================");
         System.out.println();
 
@@ -82,23 +82,21 @@ public class TokopediaUtil {
         JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
 
         IntStream.range(1, 3)
-        .forEach(index -> {
-            try {
-                jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-                Thread.sleep(1000);
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-        });
-        
+                .forEach(index -> {
+                    try {
+                        jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
 //        for (int i = 0; i < 3; i++) {
 //            jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
 //        }
-
         List<WebElement> containers = webDriver.findElements(By.cssSelector("a[data-testid=lnkProductContainer]"));
         System.out.println("Containers size: " + containers.size());
-        
+
         int totalCon = 0;
         for (WebElement con : containers) {
             try {
@@ -110,8 +108,9 @@ public class TokopediaUtil {
                 e.printStackTrace();
             }
             totalCon++;
-            if(totalCon >= LIMIT_CONTAINER)
+            if (totalCon >= LIMIT_CONTAINER) {
                 break;
+            }
         }
         return listProduct;
     }
@@ -119,7 +118,7 @@ public class TokopediaUtil {
     private static Product retrieveProduct(String currentHandle, WebElement con) throws Exception {
         JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
         String detailHRef = con.getAttribute("href");
-        
+
         System.out.println("Detail HREF: " + detailHRef);
 
         Product p = new Product();
@@ -127,7 +126,7 @@ public class TokopediaUtil {
         setProductDetail(currentHandle, p, detailHRef);
         return p;
     }
-    
+
     private static void setProductAttributes(Product p, WebElement con) {
         WebElement nameElmt = con.findElement(By.cssSelector("span.css-1bjwylw"));
         WebElement priceElmt = con.findElement(By.cssSelector("span.css-o5uqvq"));
@@ -136,8 +135,9 @@ public class TokopediaUtil {
         String name = nameElmt.getAttribute("innerText");
         String price = priceElmt.getAttribute("innerText");
         String imgLink = imgElmt.getAttribute("src");
-        if(imgLink != null)
+        if (imgLink != null) {
             imgLink = imgLink.replace(";", " ");
+        }
         String seller = sellerElmt.getAttribute("innerText");
 
         p.setName(name);
@@ -150,70 +150,67 @@ public class TokopediaUtil {
         System.out.println("Img Link: " + imgLink);
         System.out.println("Seller: " + seller);
     }
-    
+
     private static void setProductDetail(String currentHandle, Product p, String detailHRef) throws Exception {
         JavascriptExecutor jsExec = (JavascriptExecutor) webDriver;
         String productHRef = getProductHRef(detailHRef);
         System.out.println("Product ref: " + productHRef);
         try {
-        webDriver.switchTo().newWindow(WindowType.TAB);
-        webDriver.navigate().to(productHRef);
-        WebElement starElmt = null;
-        WebElement descriptionElmt = null;
-        jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-        
-        try {
-            WebDriverWait wait = new WebDriverWait(webDriver, 6);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]")));
-            starElmt = webDriver.findElement(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]"));
-        }
-        catch(Exception e) {
-            System.out.println("There's an exception when waiting for visibility of star element");
-        }
-        
-        try {
-            WebDriverWait wait = new WebDriverWait(webDriver, 3);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-testid=lblPDPDescriptionProduk]")));
-            descriptionElmt = webDriver.findElement(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]"));
-        }
-        catch(Exception e) {
-            System.out.println("There's an exception when waiting for visibility of desc element");
-        }
-        
-        String description = null;
-        if(descriptionElmt != null ) {
-            description = webDriver.findElement(By.cssSelector("div[data-testid=lblPDPDescriptionProduk]"))
-                    .getAttribute("innerText");
-            if (description.length() > 200) {
-                description = description.substring(0, 200);
+            webDriver.switchTo().newWindow(WindowType.TAB);
+            webDriver.navigate().to(productHRef);
+            WebElement starElmt = null;
+            WebElement descriptionElmt = null;
+            jsExec.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+
+            try {
+                WebDriverWait wait = new WebDriverWait(webDriver, 6);
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]")));
+                starElmt = webDriver.findElement(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]"));
+            } catch (Exception e) {
+                System.out.println("There's an exception when waiting for visibility of star element");
             }
 
-            description = description.replace("\n", ". ");
+            try {
+                WebDriverWait wait = new WebDriverWait(webDriver, 3);
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-testid=lblPDPDescriptionProduk]")));
+                descriptionElmt = webDriver.findElement(By.cssSelector("span[data-testid=lblPDPDetailProductRatingNumber]"));
+            } catch (Exception e) {
+                System.out.println("There's an exception when waiting for visibility of desc element");
+            }
 
-            p.setDescription(description);
-        }
+            String description = null;
+            if (descriptionElmt != null) {
+                description = webDriver.findElement(By.cssSelector("div[data-testid=lblPDPDescriptionProduk]"))
+                        .getAttribute("innerText");
+                if (description.length() > 200) {
+                    description = description.substring(0, 200);
+                }
 
-        String stars = null;
-        if(starElmt != null) {
-            stars = starElmt.getAttribute("innerText");
-        }
+                description = description.replace("\n", ". ");
 
-        p.setStars(stars);
-        System.out.println("Description: " + description);
-        System.out.println("Stars: " + stars);
-        webDriver.close();
-        webDriver.switchTo().window(currentHandle);
-        }
-        catch(Exception e) {
+                p.setDescription(description);
+            }
+
+            String stars = null;
+            if (starElmt != null) {
+                stars = starElmt.getAttribute("innerText");
+            }
+
+            p.setStars(stars);
+            System.out.println("Description: " + description);
+            System.out.println("Stars: " + stars);
+            webDriver.close();
+            webDriver.switchTo().window(currentHandle);
+        } catch (Exception e) {
             System.out.println("There's an exception when trying to get the detail");
             String s = webDriver.getWindowHandle();
-            if(!s.equals(currentHandle)) {
+            if (!s.equals(currentHandle)) {
                 webDriver.close();
                 webDriver.switchTo().window(currentHandle);
             }
         }
     }
-    
+
     private static String getProductHRef(String detailHRef) throws Exception {
         String productHRef = null;
         if (detailHRef.startsWith("https://ta")) {
